@@ -1,0 +1,22 @@
+# Devices enumeration
+devices:
+  #  # Device type: `sink` (speakers, playback, headphones) or `source` (microphone)
+  #- audio-type: sink
+  #  # Whether to use a default system audio device
+  #  audio-default: true
+  #  # When using not a default device this property indicates audio device name
+  #  audio-device: my-pulseaudio-device-name
+  #  # LED device path
+  #  led-device: /sys/class/leds/platform::mute
+
+  # Default sink
+  - audio-type: sink
+    audio-default: true
+    audio-device: ""
+    led-device: /sys/class/leds/platform::mute
+
+  # Default source
+  - audio-type: source
+    audio-default: true
+    audio-device: ""
+    led-device: /sys/class/leds/platform::micmute

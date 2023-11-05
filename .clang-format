@@ -1,0 +1,13 @@
+---
+BasedOnStyle: Mozilla
+AccessModifierOffset: '-4'
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+ColumnLimit: '120'
+ConstructorInitializerIndentWidth: '4'
+FixNamespaceComments: 'true'
+IndentWidth: '4'
+TabWidth: '4'
+UseTab: Never
+
+...

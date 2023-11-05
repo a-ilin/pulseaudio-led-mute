@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+dpkg-maintscript-helper rm_conffile /@CMAKE_INSTALL_SYSCONFDIR@/pulseaudio-led-mute.yml -- "$@"
+dpkg-maintscript-helper rm_conffile /@CMAKE_INSTALL_SYSCONFDIR@/udev/rules.d/99-led-audio.rules -- "$@"
+
+if [ "$1" = "remove" ]; then
+	if [ -x "/usr/bin/deb-systemd-helper" ]; then
+		deb-systemd-helper --user mask 'pulseaudio-led-mute.service' >/dev/null || true
+	fi
+fi
+
+if [ "$1" = "purge" ]; then
+	if [ -x "/usr/bin/deb-systemd-helper" ]; then
+		deb-systemd-helper --user purge 'pulseaudio-led-mute.service' >/dev/null || true
+		deb-systemd-helper --user unmask 'pulseaudio-led-mute.service' >/dev/null || true
+	fi
+fi
+
+exit 0

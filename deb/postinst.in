@@ -1,0 +1,54 @@
+#! /bin/sh
+
+set -e
+
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
+
+trigger_udev() {
+	if ! which udevadm >/dev/null 2>&1; then
+		return 0
+	fi
+	udevadm control --reload-rules || true
+	udevadm trigger --subsystem-match=leds --action=change || true
+}
+
+case "$1" in
+configure)
+	trigger_udev
+	;;
+abort-upgrade | abort-remove | abort-deconfigure) ;;
+*)
+	echo "postinst called with unknown argument \`$1'" >&2
+	exit 1
+	;;
+esac
+
+if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ] || [ "$1" = "abort-deconfigure" ] || [ "$1" = "abort-remove" ]; then
+	# This will only remove masks created by d-s-h on package removal.
+	deb-systemd-helper --user unmask 'pulseaudio-led-mute.service' >/dev/null || true
+
+	# was-enabled defaults to true, so new installations run enable.
+	if deb-systemd-helper --quiet --user was-enabled 'pulseaudio-led-mute.service'; then
+		# Enables the unit on first installation, creates new
+		# symlinks on upgrades if the unit file has changed.
+		deb-systemd-helper --user enable 'pulseaudio-led-mute.service' >/dev/null || true
+	else
+		# Update the statefile to add new symlinks (if any), which need to be
+		# cleaned up on purge. Also remove old symlinks.
+		deb-systemd-helper --user update-state 'pulseaudio-led-mute.service' >/dev/null || true
+	fi
+fi
+
+dpkg-maintscript-helper rm_conffile /@CMAKE_INSTALL_SYSCONFDIR@/pulseaudio-led-mute.yml -- "$@"
+dpkg-maintscript-helper rm_conffile /@CMAKE_INSTALL_SYSCONFDIR@/udev/rules.d/99-led-audio.rules -- "$@"
+
+exit 0

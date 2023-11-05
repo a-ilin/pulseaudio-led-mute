@@ -1,0 +1,20 @@
+[Unit]
+Description=PulseAudio LED mute indication service
+
+ConditionUser=!root
+
+[Service]
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+RestrictNamespaces=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+Type=simple
+ExecStart=/@CMAKE_INSTALL_BINDIR@/pulseaudio-led-mute
+Restart=on-failure
+RestartSec=5s
+Slice=session.slice
+
+[Install]
+WantedBy=default.target

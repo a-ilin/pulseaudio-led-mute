@@ -1,0 +1,7 @@
+# Allow mute LED be controlled by members of audio group
+SUBSYSTEM=="leds", KERNEL=="platform::mute", ACTION=="add", RUN+="/bin/chgrp -R audio /sys%p", RUN+="/bin/chmod -R g=u /sys%p"
+SUBSYSTEM=="leds", KERNEL=="platform::mute", ACTION=="change", ENV{TRIGGER}!="none", RUN+="/bin/chgrp -R audio /sys%p", RUN+="/bin/chmod -R g=u /sys%p"
+
+# Allow microphone mute LED be controlled by members of audio group
+SUBSYSTEM=="leds", KERNEL=="platform::micmute", ACTION=="add", RUN+="/bin/chgrp -R audio /sys%p", RUN+="/bin/chmod -R g=u /sys%p"
+SUBSYSTEM=="leds", KERNEL=="platform::micmute", ACTION=="change", ENV{TRIGGER}!="none", RUN+="/bin/chgrp -R audio /sys%p", RUN+="/bin/chmod -R g=u /sys%p"
